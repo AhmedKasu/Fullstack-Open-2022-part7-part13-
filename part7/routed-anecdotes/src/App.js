@@ -90,14 +90,20 @@ const CreateNew = (props) => {
   const author = useField('text');
   const info = useField('text');
 
+  const reset = () => {
+    return (
+      content.resetter.reset(), author.resetter.reset(), info.resetter.reset()
+    );
+  };
+
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     props.addNew({
-      content: content.value,
-      author: author.value,
-      info: info.value,
+      content: content.setters.value,
+      author: author.setters.value,
+      info: info.setters.value,
       votes: 0,
     });
     navigate('/');
@@ -109,18 +115,19 @@ const CreateNew = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input {...content} />
+          <input {...content.setters} />
         </div>
         <div>
           author
-          <input {...author} />
+          <input {...author.setters} />
         </div>
         <div>
           url for more info
-          <input {...info} />
+          <input {...info.setters} />
         </div>
         <button>create</button>
       </form>
+      <button onClick={reset}>reset</button>
     </div>
   );
 };
