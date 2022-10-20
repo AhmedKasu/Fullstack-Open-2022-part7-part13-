@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { handleNotification } from '../reducers/notificationReducer';
 
 const Blog = ({ blog, handleUpdate, handleDelete, loggedUser }) => {
   const [visible, setVisible] = useState(false);
@@ -7,6 +9,7 @@ const Blog = ({ blog, handleUpdate, handleDelete, loggedUser }) => {
   const hideWhenVisible = { display: visible ? 'none' : '' };
   const showWhenVisible = { display: visible ? '' : 'none' };
 
+  const dispatch = useDispatch();
   const toggleVisibility = () => {
     setVisible(!visible);
   };
@@ -21,6 +24,12 @@ const Blog = ({ blog, handleUpdate, handleDelete, loggedUser }) => {
   const handleLikes = () => {
     const updatedBlog = { ...blog, likes: blog.likes + 1 };
     handleUpdate(updatedBlog);
+    dispatch(
+      handleNotification({
+        type: 'success',
+        message: `you liked ${blog.title}`,
+      })
+    );
     console.log('blog', blog);
   };
 

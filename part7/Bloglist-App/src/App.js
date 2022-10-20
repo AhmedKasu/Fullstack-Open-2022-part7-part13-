@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+
 import Blog from './components/Blog';
 import blogService from './services/blogs';
 import Togglable from './components/Togglable';
@@ -7,6 +8,9 @@ import loginService from './services/login';
 import LoginForm from './components/LoginForm';
 import BlogsForm from './components/BlogsForm';
 
+import { handleNotification } from './reducers/notificationReducer';
+import { useDispatch } from 'react-redux';
+
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [credentials, setCredentials] = useState({
@@ -14,10 +18,7 @@ const App = () => {
     password: '',
   });
   const [user, setUser] = useState(null);
-  const [notificationMessage, setNotificationMessage] = useState({
-    success: null,
-    error: null,
-  });
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (user) {
@@ -39,20 +40,6 @@ const App = () => {
   }, []);
 
   const blogsFormRef = useRef();
-  const setErrorNotification = (error) => {
-    setNotificationMessage({
-      ...notificationMessage,
-      error: error.response.data.error,
-    });
-  };
-  const resetNotification = () => {
-    setTimeout(() => {
-      setNotificationMessage({
-        success: null,
-        error: null,
-      });
-    }, 5000);
-  };
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -63,11 +50,12 @@ const App = () => {
       setUser(user);
       setCredentials({ username: '', password: '' });
     } catch (error) {
-      setNotificationMessage({
-        ...notificationMessage,
-        error: error.response.data.error,
-      });
-      resetNotification();
+      dispatch(
+        handleNotification({
+          type: 'error',
+          message: error.response.data.error,
+        })
+      );
     }
   };
 
@@ -85,14 +73,19 @@ const App = () => {
       res = await blogService.create(newBlogObject);
       setBlogs(blogs.concat(res));
     } catch (error) {
-      setErrorNotification(error);
-      resetNotification();
+      dispatch(
+        handleNotification({
+          type: 'error',
+          message: error.response.data.error,
+        })
+      );
     }
-    setNotificationMessage({
-      ...notificationMessage,
-      success: `a new blog ${res.title} by ${res.author} added`,
-    });
-    resetNotification();
+    dispatch(
+      handleNotification({
+        type: 'success',
+        message: `a new blog ${res.title} by ${res.author} added`,
+      })
+    );
   };
 
   const handleUpdate = async (updatedBlogObject) => {
@@ -100,8 +93,12 @@ const App = () => {
       .update(updatedBlogObject, updatedBlogObject.id)
       .catch((error) => {
         if (error.response) {
-          setErrorNotification(error);
-          resetNotification();
+          dispatch(
+            handleNotification({
+              type: 'error',
+              message: error.response.data.error,
+            })
+          );
         }
       });
 
@@ -118,16 +115,21 @@ const App = () => {
       const blogsAfterDelete = blogs.filter((blog) => blog.id !== blogId);
       setBlogs(blogsAfterDelete);
     } catch (error) {
-      setErrorNotification(error);
-      resetNotification();
+      dispatch(
+        handleNotification({
+          type: 'error',
+          message: error.response.data.error,
+        })
+      );
       return;
     }
 
-    setNotificationMessage({
-      ...notificationMessage,
-      success: 'blog successfuly deleted',
-    });
-    resetNotification();
+    dispatch(
+      handleNotification({
+        type: 'success',
+        message: 'blog successfuly deleted',
+      })
+    );
   };
 
   const renderBlogsForm = () => (
@@ -163,7 +165,7 @@ const App = () => {
 
   return (
     <div>
-      <Notify notificationMessage={notificationMessage} />
+      <Notify />
       {user === null ? (
         <LoginForm
           handleLogin={handleLogin}
