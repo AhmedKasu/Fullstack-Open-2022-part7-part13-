@@ -9,26 +9,23 @@ import LoginForm from './components/LoginForm';
 import BlogsForm from './components/BlogsForm';
 
 import { handleNotification } from './reducers/notificationReducer';
-import { useDispatch } from 'react-redux';
+import { initialiseBlogs, appendBlog } from './reducers/blogsReducer';
+import { useDispatch, useSelector } from 'react-redux';
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
   const [credentials, setCredentials] = useState({
     username: '',
     password: '',
   });
   const [user, setUser] = useState(null);
   const dispatch = useDispatch();
+  const blogs = useSelector((state) => state.blogs);
 
   useEffect(() => {
     if (user) {
-      const fetchBlogs = async () => {
-        const blogs = await blogService.getAll();
-        setBlogs(blogs);
-      };
-      fetchBlogs();
+      dispatch(initialiseBlogs());
     }
-  }, [user]);
+  }, [user, dispatch]);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogUser');
@@ -38,8 +35,6 @@ const App = () => {
       setUser(user);
     }
   }, []);
-
-  const blogsFormRef = useRef();
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -64,29 +59,7 @@ const App = () => {
     setUser(null);
     blogService.setToken(null);
   };
-
-  const handleCreate = async (newBlogObject) => {
-    blogsFormRef.current.toggleVisibility();
-    let res = null;
-
-    try {
-      res = await blogService.create(newBlogObject);
-      setBlogs(blogs.concat(res));
-    } catch (error) {
-      dispatch(
-        handleNotification({
-          type: 'error',
-          message: error.response.data.error,
-        })
-      );
-    }
-    dispatch(
-      handleNotification({
-        type: 'success',
-        message: `a new blog ${res.title} by ${res.author} added`,
-      })
-    );
-  };
+  const blogsFormRef = useRef();
 
   const handleUpdate = async (updatedBlogObject) => {
     const res = await blogService
@@ -106,14 +79,14 @@ const App = () => {
     const updatedBlogs = [...blogs];
     const index = updatedBlogs.indexOf(blogToUpdate);
     updatedBlogs[index] = { ...res, user: blogToUpdate.user };
-    setBlogs(updatedBlogs);
+    dispatch(appendBlog(updatedBlogs));
   };
 
   const handleDelete = async (blogId) => {
     try {
       await blogService.deleteBlog(blogId);
       const blogsAfterDelete = blogs.filter((blog) => blog.id !== blogId);
-      setBlogs(blogsAfterDelete);
+      dispatch(appendBlog(blogsAfterDelete));
     } catch (error) {
       dispatch(
         handleNotification({
@@ -134,12 +107,12 @@ const App = () => {
 
   const renderBlogsForm = () => (
     <Togglable buttonLabel='new blog' ref={blogsFormRef}>
-      <BlogsForm handleCreate={handleCreate} />
+      <BlogsForm blogsFormRef={blogsFormRef} />
     </Togglable>
   );
 
   const renderBlogs = () => {
-    const sortedBlogs = blogs.sort((a, b) => {
+    const sortedBlogs = [...blogs].sort((a, b) => {
       return b.likes - a.likes;
     });
     return (
