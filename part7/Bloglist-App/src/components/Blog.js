@@ -2,8 +2,9 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { handleNotification } from '../reducers/notificationReducer';
+import { likeBlog, deleteBlog } from '../reducers/blogsReducer';
 
-const Blog = ({ blog, handleUpdate, handleDelete, loggedUser }) => {
+const Blog = ({ blog, loggedUser }) => {
   const [visible, setVisible] = useState(false);
 
   const hideWhenVisible = { display: visible ? 'none' : '' };
@@ -23,18 +24,17 @@ const Blog = ({ blog, handleUpdate, handleDelete, loggedUser }) => {
 
   const handleLikes = () => {
     const updatedBlog = { ...blog, likes: blog.likes + 1 };
-    handleUpdate(updatedBlog);
+    dispatch(likeBlog(updatedBlog));
     dispatch(
       handleNotification({
         type: 'success',
         message: `you liked ${blog.title}`,
       })
     );
-    console.log('blog', blog);
   };
 
-  const deleteBlog = () => {
-    handleDelete(blog.id);
+  const handleDelete = () => {
+    dispatch(deleteBlog(blog.id));
   };
 
   return (
@@ -63,7 +63,7 @@ const Blog = ({ blog, handleUpdate, handleDelete, loggedUser }) => {
         <button
           style={{ display: `${blog.user.name === loggedUser ? '' : 'none'}` }}
           id='delete'
-          onClick={deleteBlog}>
+          onClick={handleDelete}>
           remove
         </button>
       </div>
@@ -73,8 +73,6 @@ const Blog = ({ blog, handleUpdate, handleDelete, loggedUser }) => {
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
-  handleUpdate: PropTypes.func.isRequired,
-  handleDelete: PropTypes.func.isRequired,
 };
 
 export default Blog;

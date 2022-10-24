@@ -9,15 +9,15 @@ const notificationSlice = createSlice({
       const message = action.payload.message;
       const timer = action.payload.timerId;
       clearTimeout(timer - 1);
-      state.success = message;
-      return state;
+
+      return { ...state, success: message, error: null };
     },
     setErrorMessage(state, action) {
       const message = action.payload.message;
       const timer = action.payload.timerId;
       clearTimeout(timer - 1);
-      state.error = message;
-      return state;
+
+      return { ...state, success: null, error: message };
     },
     resetNotification(state, action) {
       state = initialState;

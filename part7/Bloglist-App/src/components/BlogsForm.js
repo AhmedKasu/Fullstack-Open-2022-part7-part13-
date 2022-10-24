@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addBlog } from '../reducers/blogsReducer';
 
-const BlogsForm = ({ handleCreate, blogsFormRef }) => {
+const BlogsForm = ({ blogsFormRef, loggedUser }) => {
   const [newBlog, setNewBlog] = useState({
     title: '',
     author: '',
@@ -15,7 +15,7 @@ const BlogsForm = ({ handleCreate, blogsFormRef }) => {
   const createBlog = (event) => {
     event.preventDefault();
     blogsFormRef.current.toggleVisibility();
-    dispatch(addBlog(newBlog));
+    dispatch(addBlog({ blog: newBlog, user: loggedUser }));
     setNewBlog({ title: '', author: '', url: '' });
   };
 

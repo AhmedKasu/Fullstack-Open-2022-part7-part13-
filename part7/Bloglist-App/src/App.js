@@ -9,7 +9,7 @@ import LoginForm from './components/LoginForm';
 import BlogsForm from './components/BlogsForm';
 
 import { handleNotification } from './reducers/notificationReducer';
-import { initialiseBlogs, appendBlog } from './reducers/blogsReducer';
+import { initialiseBlogs } from './reducers/blogsReducer';
 import { useDispatch, useSelector } from 'react-redux';
 
 const App = () => {
@@ -19,6 +19,7 @@ const App = () => {
   });
   const [user, setUser] = useState(null);
   const dispatch = useDispatch();
+
   const blogs = useSelector((state) => state.blogs);
 
   useEffect(() => {
@@ -61,53 +62,9 @@ const App = () => {
   };
   const blogsFormRef = useRef();
 
-  const handleUpdate = async (updatedBlogObject) => {
-    const res = await blogService
-      .update(updatedBlogObject, updatedBlogObject.id)
-      .catch((error) => {
-        if (error.response) {
-          dispatch(
-            handleNotification({
-              type: 'error',
-              message: error.response.data.error,
-            })
-          );
-        }
-      });
-
-    const blogToUpdate = blogs.find((blog) => blog.id === updatedBlogObject.id);
-    const updatedBlogs = [...blogs];
-    const index = updatedBlogs.indexOf(blogToUpdate);
-    updatedBlogs[index] = { ...res, user: blogToUpdate.user };
-    dispatch(appendBlog(updatedBlogs));
-  };
-
-  const handleDelete = async (blogId) => {
-    try {
-      await blogService.deleteBlog(blogId);
-      const blogsAfterDelete = blogs.filter((blog) => blog.id !== blogId);
-      dispatch(appendBlog(blogsAfterDelete));
-    } catch (error) {
-      dispatch(
-        handleNotification({
-          type: 'error',
-          message: error.response.data.error,
-        })
-      );
-      return;
-    }
-
-    dispatch(
-      handleNotification({
-        type: 'success',
-        message: 'blog successfuly deleted',
-      })
-    );
-  };
-
   const renderBlogsForm = () => (
     <Togglable buttonLabel='new blog' ref={blogsFormRef}>
-      <BlogsForm blogsFormRef={blogsFormRef} />
+      <BlogsForm blogsFormRef={blogsFormRef} loggedUser={user} />
     </Togglable>
   );
 
@@ -124,13 +81,7 @@ const App = () => {
         </button>
         {renderBlogsForm()}
         {sortedBlogs.map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            loggedUser={user.name}
-            handleUpdate={handleUpdate}
-            handleDelete={handleDelete}
-          />
+          <Blog key={blog.id} blog={blog} loggedUser={user.name} />
         ))}
       </div>
     );

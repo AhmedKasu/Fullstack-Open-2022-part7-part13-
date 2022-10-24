@@ -15,8 +15,21 @@ const blogsSlice = createSlice({
     },
     appendBlog(state, action) {
       const blog = action.payload;
+      console.log('newBlog', blog);
       state.push(blog);
       return state;
+    },
+    alterBlog(state, action) {
+      const updatedBlog = action.payload;
+
+      const index = state.findIndex((blog) => blog.id === updatedBlog.id);
+      state[index] = { ...updatedBlog };
+      return state;
+    },
+    removeBlog(state, action) {
+      const blogId = action.payload;
+      const blogsAfterDelete = state.filter((blog) => blog.id !== blogId);
+      return blogsAfterDelete;
     },
   },
 });
@@ -31,8 +44,8 @@ export const initialiseBlogs = () => {
 export const addBlog = (blogObj) => {
   return async (dispatch) => {
     try {
-      const newBlog = await blogService.create(blogObj);
-      dispatch(appendBlog(newBlog));
+      const newBlog = await blogService.create(blogObj.blog);
+      dispatch(appendBlog({ ...newBlog, user: blogObj.user }));
     } catch (error) {
       dispatch(
         handleNotification({
@@ -50,5 +63,47 @@ export const addBlog = (blogObj) => {
   };
 };
 
-export const { setBlogs, appendBlog } = blogsSlice.actions;
+export const likeBlog = (updatedBlog) => {
+  return async (dispatch) => {
+    const results = await blogService
+      .update(updatedBlog, updatedBlog.id)
+      .catch((error) => {
+        if (error.response) {
+          dispatch(
+            handleNotification({
+              type: 'error',
+              message: error.response.data.error,
+            })
+          );
+        }
+      });
+    dispatch(alterBlog({ ...results, user: updatedBlog.user }));
+  };
+};
+
+export const deleteBlog = (blogId) => {
+  return async (dispatch) => {
+    try {
+      await blogService.deleteBlog(blogId);
+    } catch (error) {
+      dispatch(
+        handleNotification({
+          type: 'error',
+          message: error.response.data.error,
+        })
+      );
+      return;
+    }
+    dispatch(removeBlog(blogId));
+    dispatch(
+      handleNotification({
+        type: 'success',
+        message: 'blog successfuly deleted',
+      })
+    );
+  };
+};
+
+export const { setBlogs, appendBlog, alterBlog, removeBlog } =
+  blogsSlice.actions;
 export default blogsSlice.reducer;
