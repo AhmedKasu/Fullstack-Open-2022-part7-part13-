@@ -1,7 +1,34 @@
-import PropTypes from 'prop-types';
+import { useState } from 'react';
 
-const LoginForm = ({ handleLogin, credentials, setCredentials }) => {
-  const { username, password } = credentials;
+import { useDispatch } from 'react-redux';
+import loginService from '../services/login';
+import { setLoggedUser } from '../reducers/usersReducer';
+import { handleNotification } from '../reducers/notificationReducer';
+
+const LoginForm = () => {
+  const [credentials, setCredentials] = useState({
+    username: '',
+    password: '',
+  });
+
+  const dispatch = useDispatch();
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    try {
+      const user = await loginService.login(credentials);
+      dispatch(setLoggedUser(user));
+
+      setCredentials({ username: '', password: '' });
+    } catch (error) {
+      dispatch(
+        handleNotification({
+          type: 'error',
+          message: error.response.data.error,
+        })
+      );
+    }
+  };
+
   return (
     <form onSubmit={handleLogin}>
       <h1>log in to application</h1>
@@ -10,7 +37,7 @@ const LoginForm = ({ handleLogin, credentials, setCredentials }) => {
         username
         <input
           type='text'
-          value={username}
+          value={credentials.username}
           name='Username'
           id='username'
           onChange={({ target }) =>
@@ -22,7 +49,7 @@ const LoginForm = ({ handleLogin, credentials, setCredentials }) => {
         password
         <input
           type='password'
-          value={password}
+          value={credentials.password}
           name='Password'
           id='password'
           onChange={({ target }) =>
@@ -35,12 +62,6 @@ const LoginForm = ({ handleLogin, credentials, setCredentials }) => {
       </button>
     </form>
   );
-};
-
-LoginForm.propTypes = {
-  handleLogin: PropTypes.func.isRequired,
-  credentials: PropTypes.object.isRequired,
-  setCredentials: PropTypes.func.isRequired,
 };
 
 export default LoginForm;
