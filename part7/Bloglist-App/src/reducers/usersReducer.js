@@ -1,20 +1,27 @@
-import { createSlice } from '@reduxjs/toolkit';
 import blogService from '../services/blogs';
+import usersService from '../services/users';
 
-const initialState = [];
+import { createSlice } from '@reduxjs/toolkit';
 
-const userSlice = createSlice({
-  name: 'user',
+const initialState = { loggedUsers: [], allUsers: [] };
+
+const usersSlice = createSlice({
+  name: 'users',
   initialState,
   reducers: {
     setLoggedUser(state, action) {
       const userObj = action.payload;
       window.localStorage.setItem('loggedBlogUser', JSON.stringify(userObj));
       blogService.setToken(userObj.token);
-      state.push(userObj);
+      state.loggedUsers.push(userObj);
     },
     resetLoggedUser(state, action) {
-      state = initialState;
+      state.loggedUsers = [];
+      return state;
+    },
+    setAllUsers(state, action) {
+      const allUsers = action.payload;
+      state.allUsers = allUsers;
       return state;
     },
   },
@@ -31,5 +38,17 @@ export const getLoggeduser = () => {
   };
 };
 
-export const { setLoggedUser, resetLoggedUser } = userSlice.actions;
-export default userSlice.reducer;
+export const getAllUsers = () => {
+  return async (dispatch) => {
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogUser');
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON);
+      const allUsers = await usersService.getAll(user.token);
+      dispatch(setAllUsers(allUsers));
+    }
+  };
+};
+
+export const { setLoggedUser, resetLoggedUser, setAllUsers } =
+  usersSlice.actions;
+export default usersSlice.reducer;

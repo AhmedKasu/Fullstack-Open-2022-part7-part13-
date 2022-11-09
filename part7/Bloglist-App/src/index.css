@@ -1,0 +1,124 @@
+:root {
+  background-color: #f9fafb;
+  min-height: 100%;
+}
+.App-Container {
+  background-color: #f9fafb;
+}
+
+.LoginForm,
+.Signup {
+  margin-top: 20vh;
+  margin-left: 30vw;
+  margin-right: 30vw;
+  min-height: 70vh;
+  width: 40vw;
+}
+
+.FormHeaderDiv {
+  padding-left: 35%;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+.FormHeader-SignupLink {
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
+    'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.Navbar {
+  background: #2e475d;
+  color: white;
+  padding-left: 85;
+  padding-right: 85;
+}
+
+.Blogs {
+  margin-top: 10vh;
+  padding-left: 5rem;
+  padding-right: 5rem;
+  min-height: 100%;
+}
+
+.BlogsForm {
+  width: 50vw;
+}
+
+.BlogsFormHeader {
+  padding-top: 50;
+  padding-bottom: 20;
+  font-style: italic;
+  color: #2e475d;
+}
+
+.BlogLinks {
+  color: #0091ae;
+  font-family: inherit;
+  text-decoration: auto;
+}
+
+a:hover {
+  color: #ffc107;
+}
+
+.alert {
+  padding: 1rem 30%;
+}
+.Blog {
+  min-height: 90vh;
+  margin-top: 10vh;
+  margin-left: 10vw;
+  margin-right: 10vw;
+}
+
+.Card {
+  margin: 10vh 10vw;
+  background-color: inherit;
+}
+
+.BlogComments {
+  margin-top: 2rem;
+}
+
+.Users {
+  min-height: 80vh;
+  margin-top: 10vh;
+  padding-left: 5rem;
+  padding-right: 5rem;
+}
+
+.UsersHeader,
+.BlogsFormHeader {
+  color: #2e475d;
+  font-style: italic;
+}
+
+.UsersListGroup {
+  padding-top: 20;
+}
+
+.ListGroupItem,
+.InputGroup {
+  background-color: #f9fafb;
+}
+
+.User {
+  min-height: 100vh;
+  margin-top: 10vh;
+  margin-left: 10vw;
+  margin-right: 10vw;
+}
+
+.SignupForm {
+  width: 40vw;
+}
+
+.SignupFormHeader {
+  font-style: italic;
+  color: #2e475d;
+}
+
+.Footer {
+  background-color: #d5dade;
+  margin-top: auto;
+}

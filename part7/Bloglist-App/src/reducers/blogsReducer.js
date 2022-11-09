@@ -15,13 +15,12 @@ const blogsSlice = createSlice({
     },
     appendBlog(state, action) {
       const blog = action.payload;
-      console.log('newBlog', blog);
       state.push(blog);
       return state;
     },
     alterBlog(state, action) {
       const updatedBlog = action.payload;
-
+      console.log('updatedd', updatedBlog);
       const index = state.findIndex((blog) => blog.id === updatedBlog.id);
       state[index] = { ...updatedBlog };
       return state;
@@ -53,31 +52,54 @@ export const addBlog = (blogObj) => {
           message: error.response.data.error,
         })
       );
+      return;
     }
     dispatch(
       handleNotification({
         type: 'success',
-        message: `a new blog ${blogObj.title} by ${blogObj.author} added`,
+        message: `a new blog ${blogObj.blog.title} by ${blogObj.blog.author} added`,
       })
     );
   };
 };
 
-export const likeBlog = (updatedBlog) => {
+export const likeBlog = (likedBlog) => {
   return async (dispatch) => {
-    const results = await blogService
-      .update(updatedBlog, updatedBlog.id)
-      .catch((error) => {
-        if (error.response) {
-          dispatch(
-            handleNotification({
-              type: 'error',
-              message: error.response.data.error,
-            })
-          );
-        }
-      });
-    dispatch(alterBlog({ ...results, user: updatedBlog.user }));
+    await blogService.update(likedBlog, likedBlog.id).catch((error) => {
+      if (error.response) {
+        dispatch(
+          handleNotification({
+            type: 'error',
+            message: error.response.data.error,
+          })
+        );
+        return;
+      }
+    });
+    dispatch(alterBlog(likedBlog));
+  };
+};
+
+export const commentBlog = (commentObj) => {
+  return async (dispatch) => {
+    const blog = commentObj.blog;
+    const requestObj = {
+      comment: { comment: commentObj.newComment },
+      blogId: blog.id,
+    };
+    const results = await blogService.comment(requestObj).catch((error) => {
+      if (error.response) {
+        dispatch(
+          handleNotification({
+            type: 'error',
+            message: error.response.data.error,
+          })
+        );
+        return;
+      }
+    });
+    const commentedBlog = { ...blog, comments: blog.comments.concat(results) };
+    dispatch(alterBlog(commentedBlog));
   };
 };
 

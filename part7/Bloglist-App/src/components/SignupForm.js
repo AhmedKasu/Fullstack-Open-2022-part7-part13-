@@ -1,30 +1,30 @@
-import { useNavigate, Link } from 'react-router-dom';
-import useField from '../hooks/index';
-
+import useField from '../hooks';
 import { useDispatch } from 'react-redux';
-import loginService from '../services/login';
-import { setLoggedUser } from '../reducers/usersReducer';
 import { handleNotification } from '../reducers/notificationReducer';
-
+import usersService from '../services/users';
 import { Form, Button } from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom';
 
-const LoginForm = () => {
+const SignupForm = () => {
   const username = useField('text', 'Enter Username');
+  const name = useField('text', 'Enter Name');
   const password = useField('password', 'Enter Password');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleLogin = async (event) => {
+  const handleSignup = async (event) => {
     event.preventDefault();
-    const credentials = {
+
+    const userObj = {
       username: username.setters.value,
+      name: name.setters.value,
       password: password.setters.value,
     };
+
     try {
-      const user = await loginService.login(credentials);
-      dispatch(setLoggedUser(user));
-      navigate('/');
+      await usersService.createUser(userObj);
+      navigate('/login');
     } catch (error) {
       dispatch(
         handleNotification({
@@ -32,46 +32,56 @@ const LoginForm = () => {
           message: error.response.data.error,
         })
       );
+      return;
     }
+    dispatch(
+      handleNotification({
+        type: 'success',
+        message: `User ${userObj.username} successful created`,
+      })
+    );
   };
 
   const buttonStyles =
-    username.setters.value !== '' && password.setters.value !== ''
+    username.setters.value !== '' &&
+    name.setters.value !== '' &&
+    password.setters.value !== ''
       ? null
       : true;
 
   return (
-    <div className='LoginForm'>
+    <div className='Signup'>
       <div className='FormHeaderDiv'>
-        <h2>Login</h2>
+        <h2>Signup</h2>
       </div>
-      <div className='FormContent'>
-        <Form onSubmit={handleLogin}>
-          <Form.Group className='mb-3' controlId='formBasicEmail'>
+      <div className='SignupForm'>
+        <Form onSubmit={handleSignup}>
+          <Form.Group className='mb-3'>
+            <Form.Label>Name</Form.Label>
+            <Form.Control {...name.setters} />
+          </Form.Group>
+
+          <Form.Group className='mb-3'>
             <Form.Label>User name</Form.Label>
             <Form.Control {...username.setters} />
-
-            <Form.Text className='text-muted'>
-              We ll never share your details with anyone else.
-            </Form.Text>
           </Form.Group>
 
           <Form.Group className='mb-3' controlId='formBasicPassword'>
             <Form.Label>Password</Form.Label>
             <Form.Control {...password.setters} />
           </Form.Group>
+
           <p className='FormHeader-SignupLink'>
-            have an account? <Link to='/signup'>sign up</Link>
+            allready have an account? <Link to='/login'>login</Link>
           </p>
-          <div>
-            <Button variant='primary' type='submit' disabled={buttonStyles}>
-              Login
-            </Button>
-          </div>
+
+          <Button variant='primary' type='submit' disabled={buttonStyles}>
+            Signup
+          </Button>
         </Form>
       </div>
     </div>
   );
 };
 
-export default LoginForm;
+export default SignupForm;
