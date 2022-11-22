@@ -83,7 +83,7 @@ const typeDefs = gql`
   type Author {
     name: String!
     id: ID!
-    born: Int
+    born: String
     bookCount: Int
   }
 
@@ -103,7 +103,7 @@ const typeDefs = gql`
       genres: [String!]!
     ): Book
 
-    editAuthor(name: String!, setBornTo: Int!): Author
+    editAuthor(name: String!, setBornTo: String!): Author
   }
 
   type Query {
