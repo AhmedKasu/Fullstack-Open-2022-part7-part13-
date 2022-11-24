@@ -21,7 +21,6 @@ const typeDefs = gql`
     name: String!
     id: ID!
     born: String
-    bookCount: Int
   }
 
   type Book {
@@ -56,33 +55,28 @@ const resolvers = {
     authorCount: async () => Author.collection.countDocuments(),
     bookCount: async () => Book.collection.countDocuments(),
     allBooks: async (root, args) => {
-      // if (args.author && !args.genre) {
-      //   return books.filter((book) => book.author === args.author);
-      // } else if (args.genre && !args.author) {
-      //   return books.filter((book) =>
-      //     book.genres.find((genre) => genre === args.genre)
-      //   );
-      // } else if (args.author && args.genre) {
-      //   return books.filter(
-      //     (book) =>
-      //       book.author === args.author &&
-      //       book.genres.find((genre) => genre === args.genre)
-      //   );
-      // } else {
-      //   return books;
-      // }
-      return Book.find({}).populate('author');
+      const author = await Author.findOne({ name: args.author });
+      if (args.author && !args.genre) {
+        return Book.find({
+          author: { $in: [author._id] },
+        }).populate('author');
+      } else if (args.genre && !args.author) {
+        return Book.find({
+          genres: { $in: args.genre },
+        }).populate('author');
+      } else if (args.author && args.genre) {
+        console.log('genre', args.genre);
+        return Book.find({
+          $and: [
+            { author: { $in: [author._id] } },
+            { genres: { $in: [args.genre] } },
+          ],
+        }).populate('author');
+      } else {
+        return Book.find({}).populate('author');
+      }
     },
     allAuthors: async () => Author.find({}),
-  },
-
-  Author: {
-    bookCount: (root) =>
-      books.reduce(
-        (counter, { author }) =>
-          author === root.name ? (counter += 1) : counter,
-        0
-      ),
   },
 
   Mutation: {
