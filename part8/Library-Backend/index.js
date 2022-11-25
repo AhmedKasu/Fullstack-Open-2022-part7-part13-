@@ -20,7 +20,7 @@ const typeDefs = gql`
   type Author {
     name: String!
     id: ID!
-    born: String
+    born: Int
   }
 
   type Book {
@@ -39,7 +39,7 @@ const typeDefs = gql`
       genres: [String!]!
     ): Book
 
-    editAuthor(name: String!, setBornTo: String!): Author
+    editAuthor(name: String!, setBornTo: Int!): Author
   }
 
   type Query {
@@ -98,15 +98,18 @@ const resolvers = {
       }
       return newBook;
     },
-    editAuthor: (root, args) => {
-      const author = authors.find((author) => author.name === args.name);
+    editAuthor: async (root, args) => {
+      const author = await Author.findOne({ name: args.name });
+
       if (!author) {
         return null;
       }
 
-      const updatedAuthor = { ...author, born: args.setBornTo };
-      authors = authors.map((a) => (a.name === args.name ? updatedAuthor : a));
-      return updatedAuthor;
+      const filter = { name: args.name };
+      const update = { born: args.setBornTo };
+      return Author.findOneAndUpdate(filter, update, {
+        new: true,
+      });
     },
   },
 };
