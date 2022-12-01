@@ -134,7 +134,7 @@ const resolvers = {
         }
         const author = await Author.findOne({ name: args.author });
         newBook = new Book({ ...args, author: author._id });
-        await newBook.save();
+        await (await newBook.save()).populate('author');
       } catch (error) {
         throw new UserInputError(error.message, {
           invalidArgs: args,
