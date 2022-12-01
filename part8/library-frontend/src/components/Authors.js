@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import Select from 'react-select';
 import { EDIT_AUTHOR } from '../queries';
@@ -18,7 +18,7 @@ const Authors = (props) => {
   const handleUpdate = (event) => {
     event.preventDefault();
 
-    editAuthor({ variables: { name, born } });
+    editAuthor({ variables: { name, born: Number(born) } });
 
     setResetValue(null);
     setBorn('');
