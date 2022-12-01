@@ -1,4 +1,9 @@
-const { ApolloServer, UserInputError, gql } = require('apollo-server');
+const {
+  ApolloServer,
+  UserInputError,
+  AuthenticationError,
+  gql,
+} = require('apollo-server');
 const mongoose = require('mongoose');
 
 const Author = require('./models/author');
@@ -23,8 +28,9 @@ mongoose
 const typeDefs = gql`
   type Author {
     name: String!
-    id: ID!
     born: Int
+    bookCount: Int
+    id: ID!
   }
 
   type Book {
@@ -101,8 +107,24 @@ const resolvers = {
     },
   },
 
+  Author: {
+    bookCount: async (root) => {
+      const books = await Book.find({}).populate('author');
+      return books.reduce(
+        (counter, { author }) =>
+          author.name === root.name ? (counter += 1) : counter,
+        0
+      );
+    },
+  },
+
   Mutation: {
-    addBook: async (root, args) => {
+    addBook: async (root, args, context) => {
+      const currentUser = context.currentUser;
+      if (!currentUser) {
+        throw new AuthenticationError('not authenticated');
+      }
+
       const authorExists = await Author.findOne({ name: args.author });
       let newBook;
       try {
@@ -120,9 +142,13 @@ const resolvers = {
       }
       return newBook;
     },
-    editAuthor: async (root, args) => {
-      const author = await Author.findOne({ name: args.name });
+    editAuthor: async (root, args, context) => {
+      const currentUser = context.currentUser;
+      if (!currentUser) {
+        throw new AuthenticationError('not authenticated');
+      }
 
+      const author = await Author.findOne({ name: args.name });
       if (!author) {
         return null;
       }
