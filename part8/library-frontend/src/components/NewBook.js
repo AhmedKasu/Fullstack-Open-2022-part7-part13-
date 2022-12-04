@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useMutation } from '@apollo/client';
 
-import { ALL_BOOKS, CREATE_BOOK } from '../queries';
+import { CREATE_BOOK } from '../queries';
 
 const NewBook = (props) => {
   const [title, setTitle] = useState('');
@@ -13,13 +13,6 @@ const NewBook = (props) => {
   const [createBook] = useMutation(CREATE_BOOK, {
     onError: (error) => {
       props.setError(error.graphQLErrors[0].message);
-    },
-    update: (cache, response) => {
-      cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
-        return {
-          allBooks: allBooks.concat(response.data.addBook),
-        };
-      });
     },
   });
 

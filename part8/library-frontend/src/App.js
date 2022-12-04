@@ -52,6 +52,7 @@ const App = () => {
   return (
     <div>
       <div>
+        {console.log('Error:', error)}
         <button onClick={() => setPage('authors')}>authors</button>
         <button onClick={() => setPage('books')}>books</button>
         {handleLoggedinView()}
