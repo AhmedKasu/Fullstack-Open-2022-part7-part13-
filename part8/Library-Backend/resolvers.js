@@ -43,12 +43,7 @@ const resolvers = {
 
   Author: {
     bookCount: async (root) => {
-      const books = await Book.find({}).populate('author');
-      return books.reduce(
-        (counter, { author }) =>
-          author.name === root.name ? (counter += 1) : counter,
-        0
-      );
+      return root.books.length;
     },
   },
 
@@ -66,16 +61,18 @@ const resolvers = {
         );
       }
 
-      const authorExists = await Author.findOne({ name: args.author });
       let newBook;
+      const author = await Author.findOne({ name: args.author });
+
       try {
-        if (!authorExists) {
+        if (!author) {
           const newAuthor = new Author({ name: args.author });
           await newAuthor.save();
         }
-        const author = await Author.findOne({ name: args.author });
         newBook = new Book({ ...args, author: author._id });
         await (await newBook.save()).populate('author');
+        author.books = author.books.concat(newBook._id);
+        await author.save();
       } catch (error) {
         throw new GraphQLError(error.message, {
           extensions: {

@@ -31,6 +31,7 @@ mongoose
   .catch((error) => {
     console.log('error connection to MongoDB:', error.message);
   });
+mongoose.set('debug', true);
 
 const start = async () => {
   const app = express();
@@ -46,14 +47,6 @@ const start = async () => {
 
   const server = new ApolloServer({
     schema,
-    context: async ({ req }) => {
-      const auth = req ? req.headers.authorization : null;
-      if (auth && auth.toLowerCase().startsWith('bearer ')) {
-        const decodedToken = jwt.verify(auth.substring(7), JWT_SECRET);
-        const currentUser = await User.findById(decodedToken.id);
-        return { currentUser };
-      }
-    },
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
       {
