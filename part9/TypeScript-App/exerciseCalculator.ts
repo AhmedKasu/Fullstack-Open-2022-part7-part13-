@@ -62,3 +62,5 @@ try {
     console.log('Error, something bad happened, message: ', error.message);
   }
 }
+
+export default calculateExercises;
