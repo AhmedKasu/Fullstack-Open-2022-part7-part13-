@@ -11,9 +11,10 @@ export type Patient = {
   ssn: string;
   gender: string;
   occupation: string;
+  entries: Entry[];
 };
 
-export type NewPatient = Omit<Patient, 'id'>;
+export type NewPatient = Omit<Patient, 'id' | 'entries'>;
 
 export type NewPatientFields = {
   name: unknown;
@@ -28,3 +29,8 @@ export enum Gender {
   Female = 'female',
   Other = 'other',
 }
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Entry {}
+
+export type PublicPatient = Omit<Patient, 'ssn' | 'entries'>;
