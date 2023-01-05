@@ -1,0 +1,8 @@
+#course-content p {
+  margin: 0;
+  font-style: italic;
+}
+
+h2 {
+  margin-block-end: 0;
+}
