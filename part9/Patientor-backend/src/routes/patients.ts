@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import patientService from '../services/patientsService';
-import { NewPatientFields, PublicPatient } from '../types';
+import { NewPatient, PublicPatient } from '../types';
 
 import toNewPatientEntry from '../utils';
 
@@ -21,7 +21,7 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
   try {
-    const newPatientEntry = toNewPatientEntry(req.body as NewPatientFields);
+    const newPatientEntry = toNewPatientEntry(req.body as NewPatient);
     const newPatient: PublicPatient =
       patientService.addPatient(newPatientEntry);
     res.json(newPatient);
