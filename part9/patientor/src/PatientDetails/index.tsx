@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { apiBaseUrl } from '../constants';
-import { useStateValue } from '../state';
+import { useStateValue, setPatientDetails } from '../state';
 import { Patient, PatientInfo } from '../types';
 
 import { Male, Female } from '@mui/icons-material';
@@ -27,7 +27,7 @@ const PatientDetails = () => {
         const { data: patientDetails } = await axios.get<PatientInfo>(
           `${apiBaseUrl}/patients/${id}`
         );
-        dispatch({ type: 'SET_PATIENT_DETAILS', payload: patientDetails });
+        dispatch(setPatientDetails(patientDetails));
         console.log('patient fetched');
       } catch (e) {
         console.error(e);
