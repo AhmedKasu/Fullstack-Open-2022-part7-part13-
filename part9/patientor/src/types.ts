@@ -5,9 +5,9 @@ export interface Diagnosis {
 }
 
 export enum Gender {
-  Male = "male",
-  Female = "female",
-  Other = "other"
+  Male = 'male',
+  Female = 'female',
+  Other = 'other',
 }
 
 export interface Patient {
@@ -17,4 +17,10 @@ export interface Patient {
   gender: Gender;
   ssn?: string;
   dateOfBirth?: string;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Entry {}
+export interface PatientInfo extends Patient {
+  entries: Entry[];
 }
