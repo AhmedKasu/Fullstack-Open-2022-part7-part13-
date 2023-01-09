@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import patientService from '../services/patientsService';
-import { NewPatientFields, Patient } from '../types';
+import { NewPatientFields, PublicPatient } from '../types';
 
 import toNewPatientEntry from '../utils';
 
@@ -22,7 +22,8 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
   try {
     const newPatientEntry = toNewPatientEntry(req.body as NewPatientFields);
-    const newPatient: Patient = patientService.addPatient(newPatientEntry);
+    const newPatient: PublicPatient =
+      patientService.addPatient(newPatientEntry);
     res.json(newPatient);
   } catch (error: unknown) {
     let errorMessage = 'Something went wrong.';
