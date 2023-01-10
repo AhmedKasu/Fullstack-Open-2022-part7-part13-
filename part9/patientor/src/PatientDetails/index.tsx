@@ -7,6 +7,8 @@ import { Patient, PatientInfo } from '../types';
 
 import { Male, Female } from '@mui/icons-material';
 
+import Entries from './Entries';
+
 const PatientDetails = () => {
   const [{ patients }, dispatch] = useStateValue();
   const { id } = useParams<{ id: string }>();
@@ -51,13 +53,15 @@ const PatientDetails = () => {
   )
     return null;
 
+  const patientDetails = patients[id] as PatientInfo;
   return (
     <div>
       <h2>
-        {patient.name} {genderIcons()}
+        {patientDetails.name} {genderIcons()}
       </h2>
-      <p>ssn: {patient.ssn}</p>
-      <p>occupation: {patient.occupation}</p>
+      <p>ssn: {patientDetails.ssn}</p>
+      <p>occupation: {patientDetails.occupation}</p>
+      <Entries entries={patientDetails.entries} />
     </div>
   );
 };
