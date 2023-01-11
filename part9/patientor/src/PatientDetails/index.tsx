@@ -5,8 +5,7 @@ import { apiBaseUrl } from '../constants';
 import { useStateValue, setPatientDetails } from '../state';
 import { Patient, PatientInfo } from '../types';
 
-import { Male, Female } from '@mui/icons-material';
-
+import GenderIcons from './GenderIcons';
 import Entries from './Entries';
 
 const PatientDetails = () => {
@@ -30,22 +29,13 @@ const PatientDetails = () => {
           `${apiBaseUrl}/patients/${id}`
         );
         dispatch(setPatientDetails(patientDetails));
-        console.log('patient fetched');
+        console.log('patient details fetched');
       } catch (e) {
         console.error(e);
       }
     };
     if (patient && !isFetched(patient)) void getPatientDetails(id);
   }, [id, patient, dispatch]);
-
-  const genderIcons = () => {
-    const { gender } = patient;
-    if (gender === 'male') {
-      return <Male />;
-    } else if (gender === 'female') {
-      return <Female />;
-    }
-  };
 
   if (
     !patients ||
@@ -57,7 +47,7 @@ const PatientDetails = () => {
   return (
     <div>
       <h2>
-        {patientDetails.name} {genderIcons()}
+        {patientDetails.name} <GenderIcons patient={patient} />
       </h2>
       <p>ssn: {patientDetails.ssn}</p>
       <p>occupation: {patientDetails.occupation}</p>

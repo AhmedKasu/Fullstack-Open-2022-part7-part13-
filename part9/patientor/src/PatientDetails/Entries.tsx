@@ -1,12 +1,32 @@
 import React from 'react';
-import { Entry } from '../types';
-
+import axios from 'axios';
+import { apiBaseUrl } from '../constants';
+import { Entry, Diagnosis } from '../types';
+import { useStateValue, setDiagnoses } from '../state';
 interface Props {
   entries: Entry[];
 }
 
 const Entries = ({ entries }: Props) => {
   if (!entries) return null;
+
+  const [{ diagnoses }, dispatch] = useStateValue();
+
+  React.useEffect(() => {
+    const getDiagnoses = async () => {
+      try {
+        const { data: diagnoses } = await axios.get<Diagnosis[]>(
+          `${apiBaseUrl}/diagnoses`
+        );
+
+        dispatch(setDiagnoses(diagnoses));
+        console.log('diagnoses fetched');
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    if (!diagnoses) void getDiagnoses();
+  }, [dispatch]);
 
   const renderEntries = () => {
     return (
@@ -16,7 +36,9 @@ const Entries = ({ entries }: Props) => {
         </p>
         {entry.diagnosisCodes?.map((dc) => (
           <ul key={dc}>
-            <li>{dc}</li>
+            <li>
+              {dc} {diagnoses[dc]?.name}
+            </li>
           </ul>
         ))}
       </>
