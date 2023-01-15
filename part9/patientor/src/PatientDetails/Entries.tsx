@@ -3,13 +3,17 @@ import axios from 'axios';
 import { apiBaseUrl } from '../constants';
 import { Entry, Diagnosis } from '../types';
 import { useStateValue, setDiagnoses } from '../state';
+
+import HealthCheckEntry from './HealthCheckEntry';
+import HospitalEntry from './HospitalEntry';
+import OccupationalHealthcareEntry from './OccupationalHealthcareEntry';
+
+import assertNever from '../utils/exhaustiveTypeHelper';
 interface Props {
-  entries: Entry[];
+  entry: Entry;
 }
 
-const Entries = ({ entries }: Props) => {
-  if (!entries) return null;
-
+const Entries = ({ entry }: Props) => {
   const [{ diagnoses }, dispatch] = useStateValue();
 
   React.useEffect(() => {
@@ -25,34 +29,21 @@ const Entries = ({ entries }: Props) => {
         console.error(e);
       }
     };
-    if (!diagnoses) void getDiagnoses();
+    if (Object.keys(diagnoses).length === 0) void getDiagnoses();
   }, [dispatch]);
 
-  const renderEntries = () => {
-    return (
-      <>
-        <p>
-          {entry.date} {entry.description}
-        </p>
-        {entry.diagnosisCodes?.map((dc) => (
-          <ul key={dc}>
-            <li>
-              {dc} {diagnoses[dc]?.name}
-            </li>
-          </ul>
-        ))}
-      </>
-    );
-  };
-
-  const entry = entries[0];
-
-  return (
-    <div>
-      <h3>entries</h3>
-      {entries.length === 0 ? <p> No available entries!</p> : renderEntries()}
-    </div>
-  );
+  switch (entry?.type) {
+    case 'HealthCheck':
+      return <HealthCheckEntry entry={entry} />;
+    case 'Hospital':
+      return <HospitalEntry entry={entry} diagnoses={diagnoses} />;
+    case 'OccupationalHealthcare':
+      return (
+        <OccupationalHealthcareEntry entry={entry} diagnoses={diagnoses} />
+      );
+    default:
+      return assertNever(entry);
+  }
 };
 
 export default Entries;

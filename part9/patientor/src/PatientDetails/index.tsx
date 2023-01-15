@@ -3,10 +3,17 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { apiBaseUrl } from '../constants';
 import { useStateValue, setPatientDetails } from '../state';
-import { Patient, PatientInfo } from '../types';
+import { PatientInfo } from '../types';
 
-import GenderIcons from './GenderIcons';
+import GenderIcons from '../components/GenderIcons';
 import Entries from './Entries';
+
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import { isFetched } from '../utils/patientDetailsHelper';
 
 const PatientDetails = () => {
   const [{ patients }, dispatch] = useStateValue();
@@ -16,13 +23,6 @@ const PatientDetails = () => {
   const patient = patients[id];
 
   React.useEffect(() => {
-    const isFetched = (patient: Patient): patient is PatientInfo => {
-      return (
-        Object.keys(patient).includes('entries') &&
-        Object.keys(patient).includes('ssn')
-      );
-    };
-
     const getPatientDetails = async (id: string) => {
       try {
         const { data: patientDetails } = await axios.get<PatientInfo>(
@@ -39,20 +39,50 @@ const PatientDetails = () => {
 
   if (
     !patients ||
-    (Object.keys(patients).length === 0 && patients.constructor === Object)
+    (Object.keys(patients).length === 0 && patients.constructor === Object) ||
+    !isFetched(patient)
   )
     return null;
 
-  const patientDetails = patients[id] as PatientInfo;
   return (
-    <div>
-      <h2>
-        {patientDetails.name} <GenderIcons patient={patient} />
-      </h2>
-      <p>ssn: {patientDetails.ssn}</p>
-      <p>occupation: {patientDetails.occupation}</p>
-      <Entries entries={patientDetails.entries} />
-    </div>
+    <>
+      <Card sx={{ minWidth: 275, marginTop: '2em' }}>
+        <CardContent>
+          <Typography variant='h5' component='div'>
+            {patient.name} <GenderIcons patient={patient} />
+          </Typography>
+
+          <Typography style={{ marginTop: '1em' }} variant='body2'>
+            ssn: {patient.ssn}
+          </Typography>
+
+          <Typography style={{ marginBottom: '1em' }} variant='body2'>
+            {' '}
+            occupation: {patient.occupation}
+          </Typography>
+        </CardContent>
+      </Card>
+      <Card sx={{ minWidth: 275, marginTop: '2em' }}>
+        <CardContent>
+          <Typography
+            style={{ marginBottom: '0.5em' }}
+            variant='h6'
+            component='div'>
+            Entries
+          </Typography>
+          {patient.entries.length < 1
+            ? 'No available entries'
+            : patient.entries.map((entry) => (
+                <Entries key={entry.id} entry={entry} />
+              ))}
+        </CardContent>
+      </Card>
+      <Card sx={{ minWidth: 275, marginTop: '2em' }}>
+        <CardActions>
+          <Button variant='contained'>Add new entry</Button>
+        </CardActions>
+      </Card>
+    </>
   );
 };
 
