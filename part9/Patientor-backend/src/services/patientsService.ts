@@ -1,6 +1,6 @@
 import patients from '../../data/patients';
 
-import { Patient, PublicPatient, NewPatient } from '../types';
+import { Patient, PublicPatient, NewPatient, Entry } from '../types';
 
 import { v1 as uuid } from 'uuid';
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
@@ -28,7 +28,7 @@ const getPatient = (id: string): Patient | undefined => {
 };
 
 const addPatient = (patient: NewPatient): PublicPatient => {
-  const newPatient: Patient = { id, ...patient, entries: [] };
+  const newPatient: Patient = { ...patient, id, entries: [] };
 
   patients.push(newPatient);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -38,4 +38,14 @@ const addPatient = (patient: NewPatient): PublicPatient => {
   return publicPatient;
 };
 
-export default { getPatients, addPatient, getPatient };
+const addEntry = (patientId: string, entry: Entry): Entry | undefined => {
+  const patient = patients.find((patient) => patient.id === patientId);
+  if (patient) {
+    const newEntry: Entry = { ...entry, id };
+    patient.entries.push(newEntry);
+    return newEntry;
+  }
+  return undefined;
+};
+
+export default { getPatients, addPatient, getPatient, addEntry };

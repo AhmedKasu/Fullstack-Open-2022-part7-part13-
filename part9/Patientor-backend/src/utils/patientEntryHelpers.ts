@@ -1,22 +1,5 @@
-import { NewPatient, Gender } from './types';
-
-export const isString = (text: unknown): text is string => {
-  return typeof text === 'string' || text instanceof String;
-};
-
-export const isDate = (date: string): boolean => {
-  return Boolean(Date.parse(date));
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isGender = (param: any): param is Gender => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  return Object.values(Gender).includes(param);
-};
-
-export const isSsnFormat = (ssn: string): boolean => {
-  return ssn.match(/^\d{6}[-]\d{4}$/) !== null;
-};
+import { NewPatient, Gender } from '../types';
+import { isString, isDate, isGender, isSsnFormat } from './utils';
 
 export const parseName = (name: unknown): string => {
   if (!name || !isString(name)) {
@@ -53,20 +36,20 @@ export const parseOccupation = (occupation: unknown): string => {
   return occupation;
 };
 
-type entryFields = {
+type patientInputs = {
   name: unknown;
   dateOfBirth: unknown;
   ssn: unknown;
   gender: unknown;
   occupation: unknown;
 };
-const toNewPatientEntry = ({
+const toNewPatientInputs = ({
   name,
   dateOfBirth,
   ssn,
   gender,
   occupation,
-}: entryFields): NewPatient => {
+}: patientInputs): NewPatient => {
   const newEntry: NewPatient = {
     name: parseName(name),
     dateOfBirth: parseDate(dateOfBirth),
@@ -77,4 +60,4 @@ const toNewPatientEntry = ({
   return newEntry;
 };
 
-export default toNewPatientEntry;
+export default toNewPatientInputs;
