@@ -1,4 +1,4 @@
-import { HealthCheckEntry as HealthCheckEntryType } from '../types';
+import { HealthCheckEntry as HealthCheckEntryType } from '../../types';
 
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -7,7 +7,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Typography from '@mui/material/Typography';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 
-import HealthRatingIcons from '../components/HealthRatingIcons';
+import HealthRatingIcons from '../../components/HealthRatingIcons';
 
 interface Props {
   entry: HealthCheckEntryType;

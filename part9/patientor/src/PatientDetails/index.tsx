@@ -2,8 +2,8 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { apiBaseUrl } from '../constants';
-import { useStateValue, setPatientDetails } from '../state';
-import { PatientInfo } from '../types';
+import { useStateValue, setPatientDetails, addEntry } from '../state';
+import { Entry, PatientInfo } from '../types';
 
 import GenderIcons from '../components/GenderIcons';
 import Entries from './Entries';
@@ -15,8 +15,12 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { isFetched } from '../utils/patientDetailsHelper';
 
+import AddEntryModal from '../AddEntryModal';
+import { EntryFormValues } from '../AddEntryModal/AddEntryForm';
+
 const PatientDetails = () => {
   const [{ patients }, dispatch] = useStateValue();
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   const { id } = useParams<{ id: string }>();
 
   if (!id) return null;
@@ -36,6 +40,35 @@ const PatientDetails = () => {
     };
     if (patient && !isFetched(patient)) void getPatientDetails(id);
   }, [id, patient, dispatch]);
+
+  const openModal = (): void => setModalOpen(true);
+  const closeModal = (): void => {
+    setModalOpen(false);
+  };
+
+  const submitNewEntry = async (values: EntryFormValues) => {
+    try {
+      const { data: newEntry } = await axios.post<Entry>(
+        `${apiBaseUrl}/patients/${id}/entries`,
+        values
+      );
+      const updatedEntries = patient.entries
+        ? patient.entries.concat(newEntry)
+        : [newEntry];
+      dispatch(addEntry(updatedEntries, id));
+      closeModal();
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        console.error(e?.response?.data || 'Unrecognized axios error');
+        // setError(
+        //   String(e?.response?.data?.error) || 'Unrecognized axios error'
+        // );
+      } else {
+        console.error('Unknown error', e);
+        // setError('Unknown error');
+      }
+    }
+  };
 
   if (
     !patients ||
@@ -79,7 +112,14 @@ const PatientDetails = () => {
       </Card>
       <Card sx={{ minWidth: 275, marginTop: '2em' }}>
         <CardActions>
-          <Button variant='contained'>Add new entry</Button>
+          <AddEntryModal
+            modalOpen={modalOpen}
+            onSubmit={submitNewEntry}
+            onClose={closeModal}
+          />
+          <Button variant='contained' onClick={() => openModal()}>
+            Add new entry
+          </Button>
         </CardActions>
       </Card>
     </>

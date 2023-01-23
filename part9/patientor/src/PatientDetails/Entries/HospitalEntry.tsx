@@ -1,21 +1,18 @@
-import {
-  OccupationalHealthcareEntry as OccupationalHealthcareEntryType,
-  Diagnosis,
-} from '../types';
+import { HospitalEntry as HospitalEntryType, Diagnosis } from '../../types';
 
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Typography from '@mui/material/Typography';
-import WorkIcon from '@mui/icons-material/Work';
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 
-type Props = {
-  entry: OccupationalHealthcareEntryType;
+interface Props {
+  entry: HospitalEntryType;
   diagnoses: { [code: string]: Diagnosis };
-};
+}
 
-const OccupationalHealthcareEntry = ({ entry, diagnoses }: Props) => {
+const HospitalEntry = ({ entry, diagnoses }: Props) => {
   return (
     <>
       <Accordion>
@@ -24,13 +21,11 @@ const OccupationalHealthcareEntry = ({ entry, diagnoses }: Props) => {
           aria-controls='panel1a-content'
           id='panel1a-header'>
           <Typography>
-            {entry.date} <WorkIcon />
+            {entry.date} <LocalHospitalIcon />
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography>{entry.description}</Typography>
-          <Typography>Employee: {entry.employerName}</Typography>
-
           <Typography> diagnose by {entry.specialist}</Typography>
         </AccordionDetails>
         <Accordion>
@@ -38,7 +33,7 @@ const OccupationalHealthcareEntry = ({ entry, diagnoses }: Props) => {
             expandIcon={<ExpandMoreIcon />}
             aria-controls='panel1a-content'
             id='panel1a-header'>
-            <Typography>Diagnoses</Typography>
+            <Typography>DIagnoses</Typography>
           </AccordionSummary>
           <AccordionDetails>
             {entry.diagnosisCodes?.map((code) => (
@@ -46,7 +41,6 @@ const OccupationalHealthcareEntry = ({ entry, diagnoses }: Props) => {
                 <li>{diagnoses[code]?.name} </li>
               </ul>
             ))}
-            <Typography></Typography>
             <Typography>Description: {entry.description}</Typography>
           </AccordionDetails>
         </Accordion>
@@ -55,11 +49,11 @@ const OccupationalHealthcareEntry = ({ entry, diagnoses }: Props) => {
             expandIcon={<ExpandMoreIcon />}
             aria-controls='panel1a-content'
             id='panel1a-header'>
-            <Typography>Sick Leave</Typography>
+            <Typography>Discharge</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography>Start date: {entry.sickLeave?.startDate}</Typography>
-            <Typography>End date: {entry.sickLeave?.endDate}</Typography>
+            <Typography> Date: {entry.discharge.date}</Typography>
+            <Typography>Criteria: {entry.discharge.criteria}</Typography>
           </AccordionDetails>
         </Accordion>
       </Accordion>
@@ -67,4 +61,4 @@ const OccupationalHealthcareEntry = ({ entry, diagnoses }: Props) => {
   );
 };
 
-export default OccupationalHealthcareEntry;
+export default HospitalEntry;

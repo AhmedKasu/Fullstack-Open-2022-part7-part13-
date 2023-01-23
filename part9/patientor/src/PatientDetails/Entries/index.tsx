@@ -1,14 +1,14 @@
 import React from 'react';
 import axios from 'axios';
-import { apiBaseUrl } from '../constants';
-import { Entry, Diagnosis } from '../types';
-import { useStateValue, setDiagnoses } from '../state';
+import { apiBaseUrl } from '../../constants';
+import { Entry, Diagnosis, EntryType } from '../../types';
+import { useStateValue, setDiagnoses } from '../../state';
 
 import HealthCheckEntry from './HealthCheckEntry';
 import HospitalEntry from './HospitalEntry';
 import OccupationalHealthcareEntry from './OccupationalHealthcareEntry';
 
-import assertNever from '../utils/exhaustiveTypeHelper';
+import assertNever from '../../utils/exhaustiveTypeHelper';
 interface Props {
   entry: Entry;
 }
@@ -33,11 +33,11 @@ const Entries = ({ entry }: Props) => {
   }, [dispatch]);
 
   switch (entry?.type) {
-    case 'HealthCheck':
+    case EntryType.HealthCheck:
       return <HealthCheckEntry entry={entry} />;
-    case 'Hospital':
+    case EntryType.Hospital:
       return <HospitalEntry entry={entry} diagnoses={diagnoses} />;
-    case 'OccupationalHealthcare':
+    case EntryType.OccupationalHealthcare:
       return (
         <OccupationalHealthcareEntry entry={entry} diagnoses={diagnoses} />
       );
