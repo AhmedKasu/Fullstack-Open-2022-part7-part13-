@@ -43,3 +43,7 @@ export const isHealthCheckRating = (param: any): param is HealthCheckRating => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   return Object.values(HealthCheckRating).includes(param);
 };
+
+export const isValidRating = (param: unknown): boolean => {
+  return Number(param) > -1 && Number(param) < 4;
+};

@@ -3,8 +3,6 @@ import patients from '../../data/patients';
 import { Patient, PublicPatient, NewPatient, Entry } from '../types';
 
 import { v1 as uuid } from 'uuid';
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-const id: string = uuid();
 
 const getPatients = (): PublicPatient[] => {
   return patients.map(({ id, name, dateOfBirth, gender, occupation }) => ({
@@ -28,6 +26,7 @@ const getPatient = (id: string): Patient | undefined => {
 };
 
 const addPatient = (patient: NewPatient): PublicPatient => {
+  const id: string = uuid();
   const newPatient: Patient = { ...patient, id, entries: [] };
 
   patients.push(newPatient);
@@ -39,6 +38,7 @@ const addPatient = (patient: NewPatient): PublicPatient => {
 };
 
 const addEntry = (patientId: string, entry: Entry): Entry | undefined => {
+  const id: string = uuid();
   const patient = patients.find((patient) => patient.id === patientId);
   if (patient) {
     const newEntry: Entry = { ...entry, id };

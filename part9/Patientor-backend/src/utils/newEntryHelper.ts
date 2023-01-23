@@ -13,6 +13,7 @@ import {
   objectHasKey,
   isEntryType,
   isHealthCheckRating,
+  isValidRating,
 } from './utils';
 
 const parseLongTextInputs = (text: unknown): string => {
@@ -49,7 +50,10 @@ const parseEntryType = (type: unknown): string => {
 };
 
 const parseHealthCheckRating = (healthCheckRating: unknown): number => {
-  if (!healthCheckRating || !isHealthCheckRating(healthCheckRating)) {
+  if (
+    !isValidRating(healthCheckRating) ||
+    !isHealthCheckRating(healthCheckRating)
+  ) {
     throw new Error(
       'Incorrect or missing health check rating: ' + healthCheckRating
     );
@@ -155,6 +159,8 @@ const toNewEntry = ({
   employerName,
   sickLeave,
 }: EntryFields): Entry => {
+  console.log('toNewEntry', healthCheckRating);
+
   const newEntry = {
     description: parseLongTextInputs(description),
     date: parseDate(date),
@@ -163,13 +169,14 @@ const toNewEntry = ({
       ? parseDiagnosisCodes(diagnosisCodes)
       : undefined,
     type: parseEntryType(type),
-    healthCheckRating: healthCheckRating
+    healthCheckRating: isValidRating(healthCheckRating)
       ? parseHealthCheckRating(healthCheckRating)
       : undefined,
     discharge: discharge ? parseDischarge(discharge) : undefined,
     employerName: employerName ? parseName(employerName) : undefined,
     sickLeave: sickLeave ? parseSickLeave(sickLeave) : undefined,
   };
+  console.log('newentry', newEntry);
 
   if (isHealthCheckEntry(newEntry)) {
     return newEntry;
