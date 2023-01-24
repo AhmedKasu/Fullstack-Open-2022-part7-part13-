@@ -8,13 +8,12 @@ import {
 } from '@material-ui/core';
 import { Gender } from '../types';
 import { InputLabel } from '@material-ui/core';
-// structure of a single option
+
 export type GenderOption = {
   value: Gender;
   label: string;
 };
 
-// props for select field component
 type SelectFieldProps = {
   name: string;
   label: string;

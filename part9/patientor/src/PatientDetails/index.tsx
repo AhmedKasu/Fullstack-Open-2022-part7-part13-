@@ -16,11 +16,12 @@ import Typography from '@mui/material/Typography';
 import { isFetched } from '../utils/patientDetailsHelper';
 
 import AddEntryModal from '../AddEntryModal';
-import { EntryFormValues } from '../AddEntryModal/AddEntryForm';
+import { HealthCheckEntryFormValues } from '../AddEntryModal/AddEntryForm';
 
 const PatientDetails = () => {
   const [{ patients }, dispatch] = useStateValue();
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<string>();
   const { id } = useParams<{ id: string }>();
 
   if (!id) return null;
@@ -46,7 +47,7 @@ const PatientDetails = () => {
     setModalOpen(false);
   };
 
-  const submitNewEntry = async (values: EntryFormValues) => {
+  const submitNewEntry = async (values: HealthCheckEntryFormValues) => {
     try {
       const { data: newEntry } = await axios.post<Entry>(
         `${apiBaseUrl}/patients/${id}/entries`,
@@ -60,12 +61,12 @@ const PatientDetails = () => {
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
         console.error(e?.response?.data || 'Unrecognized axios error');
-        // setError(
-        //   String(e?.response?.data?.error) || 'Unrecognized axios error'
-        // );
+        setError(
+          String(e?.response?.data?.error) || 'Unrecognized axios error'
+        );
       } else {
         console.error('Unknown error', e);
-        // setError('Unknown error');
+        setError('Unknown error');
       }
     }
   };
@@ -116,6 +117,7 @@ const PatientDetails = () => {
             modalOpen={modalOpen}
             onSubmit={submitNewEntry}
             onClose={closeModal}
+            error={error}
           />
           <Button variant='contained' onClick={() => openModal()}>
             Add new entry

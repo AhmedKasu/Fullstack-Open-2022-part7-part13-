@@ -10,11 +10,12 @@ import {
 } from '../AddEntryModal/EntryFormField';
 import { Entry, EntryType, HealthCheckRating } from '../types';
 import { useStateValue } from '../state';
+import { validateHealthCheckEntry } from '../utils/addEntryFormHelper';
 
-export type EntryFormValues = Omit<Entry, 'id'>;
+export type HealthCheckEntryFormValues = Omit<Entry, 'id'>;
 
 interface Props {
-  onSubmit: (values: EntryFormValues) => void;
+  onSubmit: (values: HealthCheckEntryFormValues) => void;
   onCancel: () => void;
 }
 
@@ -44,42 +45,25 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
         healthCheckRating: 0,
       }}
       onSubmit={onSubmit}
-      // validate={(values) => {
-      //   const requiredError = 'Field is required';
-      //   const errors: { [field: string]: string } = {};
-      //   if (!values.name) {
-      //     errors.name = requiredError;
-      //   }
-      //   if (!values.ssn) {
-      //     errors.ssn = requiredError;
-      //   }
-      //   if (!values.dateOfBirth) {
-      //     errors.dateOfBirth = requiredError;
-      //   }
-      //   if (!values.occupation) {
-      //     errors.occupation = requiredError;
-      //   }
-      //   return errors;
-      // }}
-    >
+      validate={(values) => validateHealthCheckEntry(values)}>
       {({ isValid, dirty, setFieldValue, setFieldTouched }) => {
         return (
           <Form className='form ui'>
             <Field
               label='Description'
-              placeholder='Description'
+              placeholder='Must be at least 5 characters'
               name='description'
               component={TextField}
             />
             <Field
               label='Date'
-              placeholder='Date'
+              placeholder='YYYY-MM-DD'
               name='date'
               component={TextField}
             />
             <Field
               label='Specialist'
-              placeholder='Specialist'
+              placeholder='Must have atleast 3 characters'
               name='specialist'
               component={TextField}
             />
