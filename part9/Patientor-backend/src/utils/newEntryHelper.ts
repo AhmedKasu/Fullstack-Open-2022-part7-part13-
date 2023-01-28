@@ -32,7 +32,7 @@ const parseDiagnosisCodes = (diagnosisCodes: unknown): string[] => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return diagnosisCodes;
   }
-  throw new Error('Incorrect or missing diagnosis codes: ' + diagnosisCodes);
+  throw new Error('Incorrect diagnosis codes format: ' + diagnosisCodes);
 };
 
 const parseSpecialist = (specialist: unknown): string => {
@@ -165,9 +165,10 @@ const toNewEntry = ({
     description: parseLongTextInputs(description),
     date: parseDate(date),
     specialist: parseSpecialist(specialist),
-    diagnosisCodes: diagnosisCodes
-      ? parseDiagnosisCodes(diagnosisCodes)
-      : undefined,
+    diagnosisCodes:
+      diagnosisCodes && diagnosisCodes?.length > 0
+        ? parseDiagnosisCodes(diagnosisCodes)
+        : undefined,
     type: parseEntryType(type),
     healthCheckRating: isValidRating(healthCheckRating)
       ? parseHealthCheckRating(healthCheckRating)
