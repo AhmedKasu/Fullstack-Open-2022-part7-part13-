@@ -1,11 +1,12 @@
 import { Dialog, DialogTitle, DialogContent, Divider } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import AddEntryForm, { HealthCheckEntryFormValues } from './AddEntryForm';
+import AddEntryForm from './AddEntryForm';
+import { EntryFormValues } from '../types';
 
 interface Props {
   modalOpen: boolean;
   onClose: () => void;
-  onSubmit: (values: HealthCheckEntryFormValues) => void;
+  onSubmit: (values: EntryFormValues) => void;
   error?: string;
 }
 

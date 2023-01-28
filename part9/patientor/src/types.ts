@@ -20,7 +20,7 @@ export interface Patient {
   entries?: Entry[];
 }
 
-interface BaseEntry {
+export interface BaseEntry {
   id: string;
   description: string;
   date: string;
@@ -71,4 +71,18 @@ export interface PatientInfo {
   ssn: string;
   dateOfBirth: string;
   entries: Entry[];
+}
+
+export interface EntryFormValues extends Omit<BaseEntry, 'id'> {
+  type: EntryType;
+  healthCheckRating: HealthCheckRating;
+  discharge: {
+    date: string;
+    criteria: string;
+  };
+  // employerName: string;
+  // sickLeave?: {
+  //   startDate: string;
+  //   endDate: string;
+  // };
 }

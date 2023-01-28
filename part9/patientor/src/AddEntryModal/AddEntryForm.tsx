@@ -1,3 +1,4 @@
+import React from 'react';
 import { Grid, Button } from '@material-ui/core';
 import { Field, Formik, Form } from 'formik';
 
@@ -8,14 +9,12 @@ import {
   RatingOption,
   DiagnosisSelection,
 } from '../AddEntryModal/EntryFormField';
-import { Entry, EntryType, HealthCheckRating } from '../types';
+import { EntryType, HealthCheckRating, EntryFormValues } from '../types';
 import { useStateValue } from '../state';
-import { validateHealthCheckEntry } from '../utils/addEntryFormHelper';
-
-export type HealthCheckEntryFormValues = Omit<Entry, 'id'>;
+import { FormError, validateEntryInputs } from '../utils/addEntryFormHelper';
 
 interface Props {
-  onSubmit: (values: HealthCheckEntryFormValues) => void;
+  onSubmit: (values: EntryFormValues) => void;
   onCancel: () => void;
 }
 
@@ -41,12 +40,16 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
         date: '',
         specialist: '',
         diagnosisCodes: [],
-        type: EntryType.HealthCheck,
         healthCheckRating: 0,
+        type: EntryType.HealthCheck,
+        discharge: {
+          date: '',
+          criteria: '',
+        },
       }}
       onSubmit={onSubmit}
-      validate={(values) => validateHealthCheckEntry(values)}>
-      {({ isValid, dirty, setFieldValue, setFieldTouched }) => {
+      validate={(values): FormError => validateEntryInputs(values)}>
+      {({ isValid, dirty, setFieldValue, setFieldTouched, values }) => {
         return (
           <Form className='form ui'>
             <Field
@@ -67,17 +70,36 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
               name='specialist'
               component={TextField}
             />
-            <SelectField label='Entry type' name='type' options={typeOptions} />
-            <SelectField
-              label='Rating'
-              name='healthCheckRating'
-              options={ratingOptions}
-            />
             <DiagnosisSelection
               setFieldValue={setFieldValue}
               setFieldTouched={setFieldTouched}
               diagnoses={Object.values(diagnoses)}
             />
+            <SelectField label='Entry type' name='type' options={typeOptions} />
+            {values.type === EntryType.HealthCheck && (
+              <SelectField
+                label='Rating'
+                name='healthCheckRating'
+                options={ratingOptions}
+              />
+            )}
+
+            {values.type === EntryType.Hospital && (
+              <>
+                <Field
+                  label='Discharge Date'
+                  placeholder='YYYY-MM-DD'
+                  name='discharge.date'
+                  component={TextField}
+                />
+                <Field
+                  label='Discharge Criteria'
+                  placeholder='Must have atleast 5 characters'
+                  name='discharge.criteria'
+                  component={TextField}
+                />
+              </>
+            )}
             <Grid>
               <Grid item>
                 <Button

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { apiBaseUrl } from '../constants';
 import { useStateValue, setPatientDetails, addEntry } from '../state';
-import { Entry, PatientInfo } from '../types';
+import { Entry, PatientInfo, EntryFormValues } from '../types';
 
 import GenderIcons from '../components/GenderIcons';
 import Entries from './Entries';
@@ -16,7 +16,7 @@ import Typography from '@mui/material/Typography';
 import { isFetched } from '../utils/patientDetailsHelper';
 
 import AddEntryModal from '../AddEntryModal';
-import { HealthCheckEntryFormValues } from '../AddEntryModal/AddEntryForm';
+import { valuesToSubmit } from '../utils/addEntryFormHelper';
 
 const PatientDetails = () => {
   const [{ patients }, dispatch] = useStateValue();
@@ -47,11 +47,14 @@ const PatientDetails = () => {
     setModalOpen(false);
   };
 
-  const submitNewEntry = async (values: HealthCheckEntryFormValues) => {
+  const submitNewEntry = async (values: EntryFormValues) => {
+    const newValues = valuesToSubmit(values);
+    console.log('submitting new entry', newValues);
+
     try {
       const { data: newEntry } = await axios.post<Entry>(
         `${apiBaseUrl}/patients/${id}/entries`,
-        values
+        newValues
       );
       const updatedEntries = patient.entries
         ? patient.entries.concat(newEntry)
@@ -104,11 +107,7 @@ const PatientDetails = () => {
             component='div'>
             Entries
           </Typography>
-          {patient.entries.length < 1
-            ? 'No available entries'
-            : patient.entries.map((entry) => (
-                <Entries key={entry.id} entry={entry} />
-              ))}
+          <Entries entries={patient.entries} />
         </CardContent>
       </Card>
       <Card sx={{ minWidth: 275, marginTop: '2em' }}>
