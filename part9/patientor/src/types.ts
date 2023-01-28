@@ -80,9 +80,9 @@ export interface EntryFormValues extends Omit<BaseEntry, 'id'> {
     date: string;
     criteria: string;
   };
-  // employerName: string;
-  // sickLeave?: {
-  //   startDate: string;
-  //   endDate: string;
-  // };
+  employerName: string;
+  sickLeave?: {
+    startDate: string;
+    endDate: string;
+  };
 }

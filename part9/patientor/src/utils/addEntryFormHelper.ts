@@ -23,6 +23,9 @@ export const validateEntryInputs = (values: EntryFormValues): FormError => {
   let dischargeDate = '';
   let dischargeCriteria = '';
 
+  let sickLeaveStartDate = '';
+  let sickLeaveEndDate = '';
+
   //description validation
   if (!values.description) {
     errors.description = requiredError;
@@ -66,6 +69,38 @@ export const validateEntryInputs = (values: EntryFormValues): FormError => {
     errors.discharge = { date: dischargeDate, criteria: dischargeCriteria };
   }
 
+  //employer name validation
+  if (
+    values.type === EntryType.OccupationalHealthcare &&
+    !values.employerName
+  ) {
+    errors.employerName = requiredError;
+  }
+
+  // sick leave validation
+  if (values.sickLeave?.startDate && !isDate(values.sickLeave.startDate)) {
+    sickLeaveStartDate = malformatedError;
+  } else if (values.sickLeave?.endDate && !values.sickLeave.startDate) {
+    sickLeaveStartDate = requiredError;
+  }
+
+  if (values.sickLeave?.endDate && !isDate(values.sickLeave.endDate)) {
+    sickLeaveEndDate = malformatedError;
+  } else if (values.sickLeave?.startDate && !values.sickLeave.endDate) {
+    sickLeaveEndDate = requiredError;
+  }
+
+  //setting sick leave errors Object
+  if (
+    values.type === EntryType.OccupationalHealthcare &&
+    (sickLeaveStartDate || sickLeaveEndDate)
+  ) {
+    errors.sickLeave = {
+      startDate: sickLeaveStartDate,
+      endDate: sickLeaveEndDate,
+    };
+  }
+
   return errors;
 };
 
@@ -79,18 +114,19 @@ export const valuesToSubmit = (values: EntryFormValues): EntryWithoutId => {
 
   if (values.type === EntryType.HealthCheck) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { discharge, ...healthCheckValues } = values;
+    const { discharge, employerName, sickLeave, ...healthCheckValues } = values;
     newValues = { ...healthCheckValues, type: EntryType.HealthCheck };
   }
   if (values.type === EntryType.Hospital) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { healthCheckRating, ...hospitalValues } = values;
+    const { healthCheckRating, employerName, sickLeave, ...hospitalValues } =
+      values;
     newValues = { ...hospitalValues, type: EntryType.Hospital };
   }
-  // if (values.type === EntryType.OccupationalHealthcare) {
-  //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  //   const { healthCheckRating, ...healthCareValues } = values;
-  //   newValues = { ...healthCareValues, type: EntryType.OccupationalHealthcare };
-  // }
+  if (values.type === EntryType.OccupationalHealthcare) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { healthCheckRating, discharge, ...healthCareValues } = values;
+    newValues = { ...healthCareValues, type: EntryType.OccupationalHealthcare };
+  }
   return newValues;
 };

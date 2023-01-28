@@ -46,6 +46,11 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
           date: '',
           criteria: '',
         },
+        employerName: '',
+        sickLeave: {
+          startDate: '',
+          endDate: '',
+        },
       }}
       onSubmit={onSubmit}
       validate={(values): FormError => validateEntryInputs(values)}>
@@ -96,6 +101,28 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
                   label='Discharge Criteria'
                   placeholder='Must have atleast 5 characters'
                   name='discharge.criteria'
+                  component={TextField}
+                />
+              </>
+            )}
+            {values.type === EntryType.OccupationalHealthcare && (
+              <>
+                <Field
+                  label='Employer Name'
+                  placeholder='Employer name'
+                  name='employerName'
+                  component={TextField}
+                />
+                <Field
+                  label='Sick Leave Start Date'
+                  placeholder='YYYY-MM-DD'
+                  name='sickLeave.startDate'
+                  component={TextField}
+                />
+                <Field
+                  label='Sick Leave End Date'
+                  placeholder='YYYY-MM-DD'
+                  name='sickLeave.endDate'
                   component={TextField}
                 />
               </>
