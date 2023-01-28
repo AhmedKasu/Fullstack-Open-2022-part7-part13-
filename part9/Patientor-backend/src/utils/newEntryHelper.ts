@@ -166,7 +166,7 @@ const toNewEntry = ({
     date: parseDate(date),
     specialist: parseSpecialist(specialist),
     diagnosisCodes:
-      diagnosisCodes && diagnosisCodes?.length > 0
+      diagnosisCodes && diagnosisCodes.length > 0
         ? parseDiagnosisCodes(diagnosisCodes)
         : undefined,
     type: parseEntryType(type),
@@ -175,7 +175,10 @@ const toNewEntry = ({
       : undefined,
     discharge: discharge ? parseDischarge(discharge) : undefined,
     employerName: employerName ? parseName(employerName) : undefined,
-    sickLeave: sickLeave ? parseSickLeave(sickLeave) : undefined,
+    sickLeave:
+      sickLeave && Object.values(sickLeave).every((value) => value !== '')
+        ? parseSickLeave(sickLeave)
+        : undefined,
   };
   console.log('newentry', newEntry);
 
